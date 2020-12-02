@@ -2,8 +2,15 @@ package top.candysky;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+import tk.mybatis.spring.annotation.MapperScan;
 
 @SpringBootApplication
+// 扫描 mybatis 通用 mapper 所在的包
+@MapperScan(basePackages = "top.candysky.mapper")
+// 默认扫描top.candysky下的包
+// 现在加上其他组件包
+@ComponentScan(basePackages = {"top.candysky", "org.n3r.idworker"})
 public class Application {
 
     public static void main(String[] args) {
