@@ -103,6 +103,27 @@
         <version>1.18.16</version>
     </dependency>
 
+    <!-- swagger2 配置
+        为了减少程序员撰写文档时间，提高生产力，swagger2应运而生，
+        使用swagger2可以减少编写过多的文档，只需要通过代码就能生成
+        文档API，提供给前端人员对接，非常方便
+        -->
+    <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-swagger2</artifactId>
+        <version>2.4.0</version>
+    </dependency>
+    <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-swagger-ui</artifactId>
+        <version>2.4.0</version>
+    </dependency>
+    <dependency>
+        <groupId>com.github.xiaoymin</groupId>
+        <artifactId>swagger-bootstrap-ui</artifactId>
+        <version>1.6</version>
+    </dependency>
+
     </dependencies>
 
 </project>

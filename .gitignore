@@ -3,3 +3,9 @@
 /foodie-mapper/target/
 /foodie-pojo/target/
 /foodie-service/target/
+foodie-api/src/test/
+foodie-common/src/test/
+foodie-mapper/src/test/
+foodie-pojo/src/test/
+foodie-service/src/test/
+
