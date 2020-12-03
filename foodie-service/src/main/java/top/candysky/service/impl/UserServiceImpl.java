@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     // 传到后端是个json，其实就是一个对象
+    @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public Users createUser(UserBO userBO) {
 
@@ -65,7 +66,7 @@ public class UserServiceImpl implements UserService {
         // 默认的出生日期
         user.setBirthday(DateUtil.stringToDate("1900-01-01"));
         // 默认的性别为保密
-        user.setSex(Sex.secret.type);
+        user.setSex(Sex.SECRET.type);
         // 创建日期
         user.setCreatedTime(new Date());
         user.setUpdatedTime(new Date());
@@ -73,5 +74,15 @@ public class UserServiceImpl implements UserService {
         usersMapper.insert(user);
 
         return user;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public Users queryUserForLogin(String username, String password) {
+        Example userExample = new Example(Users.class);
+        Example.Criteria criteria = userExample.createCriteria();
+        criteria.andEqualTo("username", username);
+        criteria.andEqualTo("password",password);
+        return usersMapper.selectOneByExample(userExample);
     }
 }

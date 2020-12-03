@@ -1,18 +1,17 @@
 package top.candysky.enums;
 
 /*
- * @Description：性别 枚举
+ * @Description：是否 枚举
  */
-public enum Sex {
+public enum YesOrNo {
 
-    WOMAN(0, "女"),
-    MAN(1, "男"),
-    SECRET(2, "保密");
+    NO(0, "否"),
+    YES(1, "是");
 
     public final Integer type;
     public final String value;
 
-    Sex(Integer type, String value) {
+    YesOrNo(Integer type, String value) {
         this.type = type;
         this.value = value;
     }
