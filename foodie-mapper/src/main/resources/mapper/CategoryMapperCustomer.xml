@@ -42,21 +42,21 @@
             f.father_id = #{rootCatId};
     </select>
 
-    <resultMap id="newSixItemVO" type="top.candysky.pojo.vo.NewItemVO">
+    <resultMap id="newSixItemVO" type="top.candysky.pojo.vo.NewItemsVO">
         <id column="rootCatId" property="rootCatId"/>
         <result column="name" property="rootCatName"/>
         <result column="slogan" property="slogan"/>
         <result column="catImage" property="catImage"/>
         <result column="bgColor" property="bgColor"/>
 
-        <collection property="simpleItemVOList" ofType="top.candysky.pojo.vo.SimpleItemVO">
+        <collection property="simpleItemList" ofType="top.candysky.pojo.vo.SimpleItemVO">
             <id column="itemId" property="itemId"/>
             <result column="itemName" property="itemName"/>
             <result column="itemUrl" property="itemUrl"/>
         </collection>
     </resultMap>
 
-    <select id="getSixNewItemsLazy" resultMap="newSixItemVO" parameterType="map">
+    <select id="getSixNewItemsLazy" resultMap="newSixItemVO" parameterType="Map">
         SELECT
             f.id AS rootCatId,
             f.`name` AS rootCatName,

@@ -15,7 +15,7 @@ import top.candysky.enums.YesOrNo;
 import top.candysky.pojo.Carousel;
 import top.candysky.pojo.Category;
 import top.candysky.pojo.vo.CategoryVO;
-import top.candysky.pojo.vo.NewItemVO;
+import top.candysky.pojo.vo.NewItemsVO;
 import top.candysky.service.CarouselService;
 import top.candysky.service.CategoryService;
 import top.candysky.utils.IMOOCJSONResult;
@@ -26,7 +26,7 @@ import java.util.List;
 //@Controller
 @RestController
 @RequestMapping("index")
-public class CarouselController {
+public class IndexController {
 
     final static Logger logger = LoggerFactory.getLogger("CarouselController");
 
@@ -68,7 +68,7 @@ public class CarouselController {
         return IMOOCJSONResult.ok(list);
     }
 
-    @ApiOperation(value = "获取商品分类（一级分类）", notes = "获取商品分类（一级分类）", httpMethod = "GET")
+    //@ApiOperation(value = "获取商品分类（一级分类）", notes = "获取商品分类（一级分类）", httpMethod = "GET")
     @GetMapping("/sixNewItems/{rootCatId}")
     public IMOOCJSONResult sixNewItems(
             @ApiParam(name = "rootCatId", value = "一级分类Id", required = true)
@@ -77,7 +77,7 @@ public class CarouselController {
             return IMOOCJSONResult.errorMsg("分类不存在");
         }
 
-        List<NewItemVO> list = categoryService.getSixNewItemsLazy(rootCatId);
+        List<NewItemsVO> list = categoryService.getSixNewItems(rootCatId);
         return IMOOCJSONResult.ok(list);
     }
 

@@ -10,7 +10,7 @@ import top.candysky.mapper.CategoryMapper;
 import top.candysky.mapper.CategoryMapperCustomer;
 import top.candysky.pojo.Category;
 import top.candysky.pojo.vo.CategoryVO;
-import top.candysky.pojo.vo.NewItemVO;
+import top.candysky.pojo.vo.NewItemsVO;
 import top.candysky.service.CategoryService;
 
 import java.util.HashMap;
@@ -44,9 +44,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
-    public List<NewItemVO> getSixNewItemsLazy(Integer rootCatId) {
+    public List<NewItemsVO> getSixNewItems(Integer rootCatId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("rootCatId", rootCatId);
-        return categoryMapperCustomer.getSixNewItems(map);
+        return categoryMapperCustomer.getSixNewItemsLazy(map);
     }
 }
