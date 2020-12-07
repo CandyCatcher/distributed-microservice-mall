@@ -28,7 +28,7 @@ import java.util.List;
 @RequestMapping("index")
 public class IndexController {
 
-    final static Logger logger = LoggerFactory.getLogger("CarouselController");
+    final static Logger logger = LoggerFactory.getLogger("IndexController");
 
     @Autowired
     private CarouselService carouselService;

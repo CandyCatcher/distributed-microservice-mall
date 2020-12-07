@@ -2,6 +2,7 @@ package top.candysky.service;
 
 import top.candysky.pojo.*;
 import top.candysky.pojo.vo.CommentLevelCountsVO;
+import top.candysky.pojo.vo.ShopCartVO;
 import top.candysky.utils.PagedGridResult;
 
 import java.util.List;
@@ -30,4 +31,6 @@ public interface ItemService {
     public PagedGridResult searchItemsBykeywords(String keywords, String sort, Integer page, Integer pageSize);
 
     public PagedGridResult searchItemsByThirdCat(Integer catId, String sort, Integer page, Integer pageSize);
+
+    public List<ShopCartVO> queryItemBySpecId(String specId);
 }

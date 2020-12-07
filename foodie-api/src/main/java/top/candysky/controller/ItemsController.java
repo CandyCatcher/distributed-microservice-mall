@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.candysky.enums.YesOrNo;
 import top.candysky.pojo.*;
-import top.candysky.pojo.vo.CategoryVO;
-import top.candysky.pojo.vo.CommentLevelCountsVO;
-import top.candysky.pojo.vo.ItemInfoVO;
-import top.candysky.pojo.vo.NewItemsVO;
+import top.candysky.pojo.vo.*;
 import top.candysky.service.CarouselService;
 import top.candysky.service.CategoryService;
 import top.candysky.service.ItemService;
@@ -154,5 +151,19 @@ public class ItemsController {
 
         PagedGridResult grid = itemsService.searchItemsByThirdCat(catId, sort, page, pageSize);
         return IMOOCJSONResult.ok(grid);
+    }
+
+    // 用于用户长时间未登录网站，刷新购物车中的数据（主要是商品价格），类似京东淘宝
+    @ApiOperation(value = "根据商品规格ids查找最新的商品数据", notes = "根据商品规格ids查找最新的商品数据", httpMethod = "GET")
+    @GetMapping("/refresh")
+    public IMOOCJSONResult refresh(
+            @ApiParam(value = "拼接的规格ids", name = "specId", required = true, example = "1,2,3")
+            @RequestParam String itemSpecIds) {
+        if (StringUtils.isBlank(itemSpecIds)) {
+            return IMOOCJSONResult.ok();
+        }
+
+        List<ShopCartVO> shopCartVOList = itemsService.queryItemBySpecId(itemSpecIds);
+        return IMOOCJSONResult.ok(shopCartVOList);
     }
 }

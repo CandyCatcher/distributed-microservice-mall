@@ -13,12 +13,12 @@ import top.candysky.pojo.*;
 import top.candysky.pojo.vo.CommentLevelCountsVO;
 import top.candysky.pojo.vo.ItemCommentVO;
 import top.candysky.pojo.vo.SearchItemsVO;
+import top.candysky.pojo.vo.ShopCartVO;
 import top.candysky.service.ItemService;
 import top.candysky.utils.DesensitizationUtil;
 import top.candysky.utils.PagedGridResult;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ItemServiceImpl implements ItemService {
@@ -155,6 +155,15 @@ public class ItemServiceImpl implements ItemService {
         PageHelper.startPage(page, pageSize);
         List<SearchItemsVO> searchItemsVOList = itemsMapperCustomer.searchItemsByThirdCat(map);
         return setterPagedGrid(searchItemsVOList, page);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public List<ShopCartVO> queryItemBySpecId(String specId) {
+        String[] ids = specId.split(",");
+        List<Object> list = new ArrayList<>();
+        Collections.addAll(list, ids);
+        return itemsMapperCustomer.queryItemBySpecId(list);
     }
 
     private PagedGridResult setterPagedGrid(List<?> list, Integer page) {

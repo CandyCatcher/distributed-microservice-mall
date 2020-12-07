@@ -95,5 +95,34 @@
      </choose>
     </select>
 
+    <select id="queryItemBySpecId" parameterType="List" resultType="top.candysky.pojo.vo.ShopCartVO">
+        SELECT
+            i.id AS itemId,
+            i.item_name AS itemName,
+            ii.url AS itemImgUrl,
+            spec.id AS specId,
+            spec.`name` AS specName,
+            spec.price_normal AS priceNormal,
+            spec.price_discount AS priceDiscount
+        FROM
+            items_spec spec
+        LEFT JOIN
+            items i
+        ON
+            spec.item_id = i.id
+        LEFT JOIN
+            items_img ii
+        ON
+            ii.item_id = i.id
+        WHERE
+            ii.is_main = 1
+        AND
+            spec.id
+        IN
+            <foreach collection="paramsList" index="index" item="specId" open="(" separator="," close=")">
+                #{specId}
+            </foreach>
+    </select>
+
 
 </mapper>
