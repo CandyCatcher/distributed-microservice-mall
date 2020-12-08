@@ -5,11 +5,9 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import top.candysky.enums.OrderStatusEnum;
 import top.candysky.enums.PayMethod;
 import top.candysky.pojo.bo.SubmitOrderBO;
@@ -18,6 +16,8 @@ import top.candysky.pojo.vo.OrderVO;
 import top.candysky.service.ItemService;
 import top.candysky.service.OrderService;
 import top.candysky.utils.IMOOCJSONResult;
+
+import static top.candysky.controller.BaseController.PAYMENTURL;
 
 @Api(value = "订单相关", tags = {"订单相关的API接口"})
 @RestController
@@ -30,6 +30,9 @@ public class OrdersController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @ApiOperation(value = "获取商品页面的详细信息", notes = "点击首页商品展示图片，跳转到详情页", httpMethod = "GET")
     @PostMapping("/create")
@@ -48,6 +51,8 @@ public class OrdersController {
         // TODO 整合redis之后，完善购物车的已结算商品清楚，并且同步到前端的cookie
 
         // 将商户订单的信息发送给支付中心，用于保存支付中心的订单数据
+        // 那怎么在我们的系统中去调用另一个系统的功能呢？
+        // 可以用http，也可以用spring的rest
         MerchantOrdersVO merchantOrdersVO = orderVO.getMerchantOrdersVO();
         merchantOrdersVO.setReturnUrl(BaseController.PAYRETURNURL);
 
@@ -56,8 +61,17 @@ public class OrdersController {
         headers.add("imoocUserId", "imooc");
         headers.add("password", "imooc");
 
+        // 传过去的对象类型
         HttpEntity<MerchantOrdersVO> entity = new HttpEntity<>(merchantOrdersVO, headers);
 
+        // 返回的类型IMOOCJSONResult.class
+        ResponseEntity<IMOOCJSONResult> responseEntity = restTemplate.postForEntity(PAYMENTURL, entity, IMOOCJSONResult.class);
+
+        IMOOCJSONResult payResult = responseEntity.getBody();
+
+        if (payResult.getStatus() != 200) {
+            return IMOOCJSONResult.errorMsg("支付中心订单创建失败");
+        }
 
         return IMOOCJSONResult.ok(orderId);
     }
