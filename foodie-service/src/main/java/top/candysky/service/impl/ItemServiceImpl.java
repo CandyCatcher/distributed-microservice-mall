@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 import top.candysky.enums.CommentLevel;
+import top.candysky.enums.YesOrNo;
 import top.candysky.mapper.*;
 import top.candysky.pojo.*;
 import top.candysky.pojo.vo.CommentLevelCountsVO;
@@ -164,6 +165,30 @@ public class ItemServiceImpl implements ItemService {
         List<Object> list = new ArrayList<>();
         Collections.addAll(list, ids);
         return itemsMapperCustomer.queryItemBySpecId(list);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public ItemsSpec queryItemSpecById(String itemSpecId) {
+        return itemsSpecMapper.selectByPrimaryKey(itemSpecId);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public String queryItemMainImagById(String itemId) {
+        ItemsImg itemImg = new ItemsImg();
+        itemImg.setItemId(itemId);
+        itemImg.setIsMain(YesOrNo.YES.type);
+        return itemsImgMapper.selectOne(itemImg).getUrl();
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public void decreaseItemSpecStock(ItemsSpec itemsSpec, Integer buyCounts) {
+        int result = itemsMapperCustomer.decreaseItemSpecStock(itemsSpec.getId(), buyCounts);
+        if (result != 1) {
+            throw new RuntimeException("订单创建失败，原因：库存不足！");
+        }
     }
 
     private PagedGridResult setterPagedGrid(List<?> list, Integer page) {
