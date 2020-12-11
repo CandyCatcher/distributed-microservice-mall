@@ -56,6 +56,8 @@ public class OrdersController {
         MerchantOrdersVO merchantOrdersVO = orderVO.getMerchantOrdersVO();
         merchantOrdersVO.setReturnUrl(BaseController.PAYRETURNURL);
 
+        merchantOrdersVO.setAmount(1);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("imoocUserId", "imooc");

@@ -9,7 +9,7 @@ public class BaseController {
     public static final Integer PAGE_SIZE = 20;
 
     // 支付中心的调用地址
-    public static final String PAYMENTURL = "http://payment.t.mukewang.com/foodie-payment/payment/ceateMerchantOrder";
+    public static final String PAYMENTURL = "http://payment.t.mukewang.com/foodie-payment/payment/createMerchantOrder";
 
     // 微信支付成功后->支付中心->天天吃货平台的回调通知URL
     public static final String PAYRETURNURL = "http://localhost:8080/orders/notifynotifyMerchantOrderPaid";
