@@ -6,9 +6,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 import top.candysky.mapper.CarouselMapper;
-import top.candysky.mapper.UsersMapper;
 import top.candysky.pojo.Carousel;
-import top.candysky.pojo.Users;
 import top.candysky.service.CarouselService;
 
 import java.util.List;

@@ -2,21 +2,29 @@ package top.candysky.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import top.candysky.enums.OrderStatusEnum;
 import top.candysky.enums.PayMethod;
+import top.candysky.pojo.bo.ShopCartBO;
 import top.candysky.pojo.bo.SubmitOrderBO;
 import top.candysky.pojo.vo.MerchantOrdersVO;
 import top.candysky.pojo.vo.OrderVO;
 import top.candysky.service.ItemService;
 import top.candysky.service.OrderService;
 import top.candysky.utils.IMOOCJSONResult;
+import top.candysky.utils.JsonUtils;
+import top.candysky.utils.RedisOperator;
 
+import java.util.List;
+
+import static top.candysky.controller.BaseController.FOODIE_SHOPCART;
 import static top.candysky.controller.BaseController.PAYMENTURL;
 
 @Api(value = "订单相关", tags = {"订单相关的API接口"})
@@ -34,21 +42,34 @@ public class OrdersController {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private RedisOperator redisOperator;
+
     @ApiOperation(value = "获取商品页面的详细信息", notes = "点击首页商品展示图片，跳转到详情页", httpMethod = "GET")
     @PostMapping("/create")
     public IMOOCJSONResult create(@RequestBody SubmitOrderBO submitOrderBO) {
         if (!submitOrderBO.getPayMethod().equals(PayMethod.WECHAT.value) && !submitOrderBO.getPayMethod().equals(PayMethod.ALIPAY.value)) {
             return IMOOCJSONResult.errorMsg("支付方式不支持");
         }
+
+        // 在创建订单之前，需要看redis中有没有相应的购物车，
+        String shopCartStr = redisOperator.get(FOODIE_SHOPCART + ":" + submitOrderBO.getUserId());
+        if (StringUtils.isBlank(shopCartStr)) {
+            // 因为后面要使用到购物车，所以这里购物车不能为空
+            return IMOOCJSONResult.errorMsg("购物车数据错误");
+        }
+
+        List<ShopCartBO> shopCartList = JsonUtils.jsonToList(shopCartStr, ShopCartBO.class);
+
         /*
          * 1.创建订单
          * 2.创建订单之后，移除购物车中已结算（已提交）的商品
          * 3.向支付中心发送当前订单，用于保存支付中心的订单数据
          */
-        OrderVO orderVO = orderService.createOrder(submitOrderBO);
+        OrderVO orderVO = orderService.createOrder(shopCartList, submitOrderBO);
         String orderId = orderVO.getOrderId();
 
-        // TODO 整合redis之后，完善购物车的已结算商品清楚，并且同步到前端的cookie
+        // TODO 整合redis之后，完善购物车的已结算商品数据，并且同步到前端的cookie
 
         // 将商户订单的信息发送给支付中心，用于保存支付中心的订单数据
         // 那怎么在我们的系统中去调用另一个系统的功能呢？

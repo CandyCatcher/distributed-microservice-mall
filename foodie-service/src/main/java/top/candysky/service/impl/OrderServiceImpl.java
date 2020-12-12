@@ -11,6 +11,7 @@ import top.candysky.mapper.OrderItemsMapper;
 import top.candysky.mapper.OrderStatusMapper;
 import top.candysky.mapper.OrdersMapper;
 import top.candysky.pojo.*;
+import top.candysky.pojo.bo.ShopCartBO;
 import top.candysky.pojo.bo.SubmitOrderBO;
 import top.candysky.pojo.vo.MerchantOrdersVO;
 import top.candysky.pojo.vo.OrderVO;
@@ -82,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
     OrderItemsMapper orderItemsMapper;
 
     @Override
-    public OrderVO createOrder(SubmitOrderBO submitOrderBO) {
+    public OrderVO createOrder(List<ShopCartBO>shopCartList, SubmitOrderBO submitOrderBO) {
         /*
         那么创建一个订单的时候，要创建上面这么几个表
          */
@@ -118,12 +119,18 @@ public class OrderServiceImpl implements OrderService {
         // 2. 新订单商品数据保存
         // 需要看前端传过来的数据类型是什么样的
 
-        Integer buyCounts = 1;
+        //Integer buyCounts = 1;
 
         String[] itemSpecIdArr = itemSpecIds.split(",");
         Integer totalAmount = 0;
         Integer realPayAmount = 0;
         for (String itemSpecId : itemSpecIdArr) {
+
+            /*
+            整合redis之后，商品的购买数量需要重新从redis的购物车中获取，从cookie中获取会出现数据错误
+             */
+            Integer buyCounts = getCountFromShopCart(shopCartList, itemSpecId);
+
             // 1.根据具体的规格id查询商品信息,主要获取价格
             ItemsSpec itemsSpec = itemService.queryItemSpecById(itemSpecId);
             totalAmount += itemsSpec.getPriceNormal() * buyCounts;
@@ -178,6 +185,15 @@ public class OrderServiceImpl implements OrderService {
         orderVO.setMerchantOrdersVO(merchantOrdersVO);
 
         return orderVO;
+    }
+
+    private Integer getCountFromShopCart(List<ShopCartBO> shopCartList, String itemSpecId) {
+        for (ShopCartBO sc : shopCartList) {
+            if (sc.getSpecId().equals(itemSpecId)) {
+                return sc.getBuyCounts();
+            }
+        }
+
     }
 
     @Override
