@@ -5,30 +5,40 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.spring.web.json.Json;
 import top.candysky.pojo.Users;
+import top.candysky.pojo.bo.ShopCartBO;
 import top.candysky.pojo.bo.UserBO;
+import top.candysky.pojo.vo.UsersVO;
 import top.candysky.service.UserService;
-import top.candysky.utils.CookieUtils;
-import top.candysky.utils.IMOOCJSONResult;
-import top.candysky.utils.JsonUtils;
-import top.candysky.utils.MD5Utils;
+import top.candysky.utils.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static top.candysky.controller.BaseController.FOODIE_SHOPCART;
 
 // 这个接口可以添加一些内容
 @Api(value = "注册&登录", tags = {"用于注册和登录的相关接口"})
 @RestController
 @RequestMapping("passport")
-public class PassPortController {
+public class PassPortController extends BaseController{
 
     final static Logger logger = LoggerFactory.getLogger("PassPortController");
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    RedisOperator redisOperator;
 
     // 用于阐述当前方法的内容
     @ApiOperation(value = "用户名是否存在", notes = "用户名是否存在", httpMethod = "GET")
@@ -78,8 +88,13 @@ public class PassPortController {
 
         // 5. 实现注册
         Users userResult = userService.createUser(userBO);
-        userResult = setNullProperty(userResult);
-        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userResult), true);
+        // 降不必要的内容忽略掉
+        //userResult = setNullProperty(userResult);
+
+        UsersVO usersVO = convertUsersVO(userResult);
+
+        // 注册完cookie信息会被覆盖
+        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(usersVO), true);
 
         return IMOOCJSONResult.ok();
     }
@@ -107,8 +122,18 @@ public class PassPortController {
             return IMOOCJSONResult.errorMsg("用户名或密码错误");
         }
 
-        userResult = setNullProperty(userResult);
-        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userResult), true);
+         /*
+        生成用户token，存入redis会话
+         */
+        UsersVO usersVO = convertUsersVO(userResult);
+
+        //userResult = setNullProperty(userResult);
+        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(usersVO), true);
+
+        /*
+        同步购物车数据
+         */
+        synchShopCartData(userResult.getId(), request, response);
 
         return IMOOCJSONResult.ok(userResult);
     }
@@ -122,10 +147,80 @@ public class PassPortController {
          */
         CookieUtils.deleteCookie(request, response, "user");
 
-        // TODO 用户退出登录需要清空购物车
-        // TODO 分布式会话需要清除用户数据
+        /*
+        用户退出登录, 前端的cookie需要清掉，redis中的一些信息也需要清理
+         */
+        redisOperator.del(REDIS_USER_TOKEN + ":" + userId);
+        // 分布式会话需要清除用户数据
+        CookieUtils.deleteCookie(request, response, FOODIE_SHOPCART);
 
         return IMOOCJSONResult.ok();
+    }
+
+    /**
+     * 注册登录成功后，同步cookie和redis的购物车
+     */
+    private void synchShopCartData(String userId, HttpServletRequest request, HttpServletResponse response) {
+        /*
+        1.redis中没有数据，如果cookie中的购物车为空，那么这个时候不作任何处理
+                         如果cookie中的购物车不为空，那么将cookie的数据直接放在redis中
+        2.redis中有数据，如果cookie中的购物车为空，那么直接把redis中的购物车覆盖本地cookie
+                        如果cookie中的购物车不为空，同时cookie中的某个商品在redis中存在，则以cookie为主，删除redis中的，
+                        把cookie中的商品直接覆盖redis中
+        3.同步到redis中之后，覆盖本地cookie购物车的数据，保证本地购物车的数据是同步到最新的
+         */
+        // 从redis中获取购物车
+        String shopCartJsonRedis = redisOperator.get(FOODIE_SHOPCART + ":" + userId);
+
+        // 从cookie中获取购物车
+        String shopCartJsonCookie = CookieUtils.getCookieValue(request, response, FOODIE_SHOPCART);
+
+        if (StringUtils.isBlank(shopCartJsonRedis)) {
+            if (StringUtils.isNotBlank(shopCartJsonCookie)) {
+                redisOperator.set(FOODIE_SHOPCART + ":" + userId, shopCartJsonCookie);
+            }
+        } else {
+            if (StringUtils.isBlank(shopCartJsonCookie)) {
+                CookieUtils.setCookie(request, response, FOODIE_SHOPCART, shopCartJsonRedis, true);
+            } else {
+                /*
+                 1. 已经存在的，把cookie中对应的数量，覆盖redis（参考京东）
+                 2. 该项商品标记为待删除，统一放入一个待删除的list
+                 3. 从cookie中清理所有的待删除list
+                 4. 合并redis和cookie中的数据
+                 5. 更新到redis和cookie中
+                 */
+                List<ShopCartBO> shopCartBOListRedis = JsonUtils.jsonToList(shopCartJsonRedis, ShopCartBO.class);
+                List<ShopCartBO> shopCartBOListCookie = JsonUtils.jsonToList(shopCartJsonCookie, ShopCartBO.class);
+
+                // 定义一个待删除的list
+                List<ShopCartBO> pendingDeleteList = new ArrayList<>();
+
+                for (ShopCartBO redisShopCart : shopCartBOListRedis) {
+                    String redisSpecId = redisShopCart.getSpecId();
+
+                    for (ShopCartBO cookieShopCart : shopCartBOListCookie) {
+                        String cookieSpecId = cookieShopCart.getSpecId();
+
+                        if (redisSpecId.equals(cookieSpecId)) {
+                            // 覆盖redis的购买数量，不累加
+                            redisShopCart.setBuyCounts(cookieShopCart.getBuyCounts());
+                            // 把cookieShopCart放入待删除的列表中，用于最后的删除与合并
+                            pendingDeleteList.add(cookieShopCart);
+                        }
+                    }
+                }
+
+                // 从现有的cookie中删除对应的覆盖过的商品数据
+                shopCartBOListCookie.removeAll(pendingDeleteList);
+                // 合并两个list
+                // TODO 这样就合并了？
+                shopCartBOListRedis.addAll(shopCartBOListCookie);
+                // 更新到redis和cookie
+                CookieUtils.setCookie(request, response, FOODIE_SHOPCART, JsonUtils.objectToJson(shopCartBOListRedis), true);
+                redisOperator.set(FOODIE_SHOPCART + ":" + userId, JsonUtils.objectToJson(shopCartBOListRedis));
+            }
+        }
     }
 
     private Users setNullProperty(Users userResult) {

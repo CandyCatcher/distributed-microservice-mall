@@ -30,10 +30,11 @@ public final class CookieUtils {
 	 * 
 	 * @Description: 得到Cookie的值, 不编码
 	 * @param request
-	 * @param cookieName
-	 * @return
+	 * @param response
+     * @param cookieName
+     * @return
 	 */
-    public static String getCookieValue(HttpServletRequest request, String cookieName) {
+    public static String getCookieValue(HttpServletRequest request, HttpServletResponse response, String cookieName) {
         return getCookieValue(request, cookieName, false);
     }
     

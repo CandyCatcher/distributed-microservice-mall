@@ -3,8 +3,6 @@ package top.candysky.service.impl;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.annotation.Order;
-import tk.mybatis.mapper.code.ORDER;
 import top.candysky.enums.OrderStatusEnum;
 import top.candysky.enums.YesOrNo;
 import top.candysky.mapper.OrderItemsMapper;
@@ -15,11 +13,11 @@ import top.candysky.pojo.bo.ShopCartBO;
 import top.candysky.pojo.bo.SubmitOrderBO;
 import top.candysky.pojo.vo.MerchantOrdersVO;
 import top.candysky.pojo.vo.OrderVO;
-import top.candysky.pojo.vo.ShopCartVO;
 import top.candysky.service.AddressService;
 import top.candysky.service.ItemService;
 import top.candysky.service.OrderService;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -124,12 +122,22 @@ public class OrderServiceImpl implements OrderService {
         String[] itemSpecIdArr = itemSpecIds.split(",");
         Integer totalAmount = 0;
         Integer realPayAmount = 0;
+
+        /*
+         当商品结算之后，redis的购物车中的数据要清除一下
+         这里使用一个list存储即将要结算（清除）的数据
+         */
+        List<ShopCartBO> toBeRemovedShopcartList = new ArrayList<>();
+
         for (String itemSpecId : itemSpecIdArr) {
 
             /*
             整合redis之后，商品的购买数量需要重新从redis的购物车中获取，从cookie中获取会出现数据错误
+            这里就是获取redis的购物车
              */
-            Integer buyCounts = getCountFromShopCart(shopCartList, itemSpecId);
+            ShopCartBO cartItem = getCountFromShopCart(shopCartList, itemSpecId);
+            Integer buyCounts = cartItem.getBuyCounts();
+            toBeRemovedShopcartList.add(cartItem);
 
             // 1.根据具体的规格id查询商品信息,主要获取价格
             ItemsSpec itemsSpec = itemService.queryItemSpecById(itemSpecId);
@@ -183,17 +191,19 @@ public class OrderServiceImpl implements OrderService {
         OrderVO orderVO = new OrderVO();
         orderVO.setOrderId(orderId);
         orderVO.setMerchantOrdersVO(merchantOrdersVO);
+        // 在这里面设置要删除的商品list，返回到controller中
+        orderVO.setToBeRemovedShopcartList(toBeRemovedShopcartList);
 
         return orderVO;
     }
 
-    private Integer getCountFromShopCart(List<ShopCartBO> shopCartList, String itemSpecId) {
+    private ShopCartBO getCountFromShopCart(List<ShopCartBO> shopCartList, String itemSpecId) {
         for (ShopCartBO sc : shopCartList) {
             if (sc.getSpecId().equals(itemSpecId)) {
-                return sc.getBuyCounts();
+                return sc;
             }
         }
-
+        return null;
     }
 
     @Override

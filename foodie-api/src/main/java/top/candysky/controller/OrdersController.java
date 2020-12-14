@@ -18,10 +18,13 @@ import top.candysky.pojo.vo.MerchantOrdersVO;
 import top.candysky.pojo.vo.OrderVO;
 import top.candysky.service.ItemService;
 import top.candysky.service.OrderService;
+import top.candysky.utils.CookieUtils;
 import top.candysky.utils.IMOOCJSONResult;
 import top.candysky.utils.JsonUtils;
 import top.candysky.utils.RedisOperator;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 import static top.candysky.controller.BaseController.FOODIE_SHOPCART;
@@ -47,7 +50,9 @@ public class OrdersController {
 
     @ApiOperation(value = "获取商品页面的详细信息", notes = "点击首页商品展示图片，跳转到详情页", httpMethod = "GET")
     @PostMapping("/create")
-    public IMOOCJSONResult create(@RequestBody SubmitOrderBO submitOrderBO) {
+    public IMOOCJSONResult create(@RequestBody SubmitOrderBO submitOrderBO,
+                                  HttpServletRequest request,
+                                  HttpServletResponse response) {
         if (!submitOrderBO.getPayMethod().equals(PayMethod.WECHAT.value) && !submitOrderBO.getPayMethod().equals(PayMethod.ALIPAY.value)) {
             return IMOOCJSONResult.errorMsg("支付方式不支持");
         }
@@ -69,7 +74,14 @@ public class OrdersController {
         OrderVO orderVO = orderService.createOrder(shopCartList, submitOrderBO);
         String orderId = orderVO.getOrderId();
 
-        // TODO 整合redis之后，完善购物车的已结算商品数据，并且同步到前端的cookie
+        /*
+         整合redis之后，完善购物车的已结算商品数据，并且同步到前端的cookie
+         清理要去除的商品
+         覆盖现有的redis汇总的购物数据
+         */
+        shopCartList.removeAll(orderVO.getToBeRemovedShopcartList());
+        redisOperator.set(FOODIE_SHOPCART + ":" + submitOrderBO.getUserId(), JsonUtils.objectToJson(shopCartList));
+        CookieUtils.setCookie(request, response, FOODIE_SHOPCART, "");
 
         // 将商户订单的信息发送给支付中心，用于保存支付中心的订单数据
         // 那怎么在我们的系统中去调用另一个系统的功能呢？
