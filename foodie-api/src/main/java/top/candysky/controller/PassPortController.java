@@ -223,18 +223,18 @@ public class PassPortController extends BaseController{
         }
     }
 
-    private Users setNullProperty(Users userResult) {
-
-        userResult.setPassword(null);
-        userResult.setRealname(null);
-        userResult.setMobile(null);
-        userResult.setMobile(null);
-        userResult.setEmail(null);
-        userResult.setBirthday(null);
-        userResult.setCreatedTime(null);
-        userResult.setUpdatedTime(null);
-
-        return userResult;
-    }
+    //private Users setNullProperty(Users userResult) {
+    //
+    //    userResult.setPassword(null);
+    //    userResult.setRealname(null);
+    //    userResult.setMobile(null);
+    //    userResult.setMobile(null);
+    //    userResult.setEmail(null);
+    //    userResult.setBirthday(null);
+    //    userResult.setCreatedTime(null);
+    //    userResult.setUpdatedTime(null);
+    //
+    //    return userResult;
+    //}
 
 }
