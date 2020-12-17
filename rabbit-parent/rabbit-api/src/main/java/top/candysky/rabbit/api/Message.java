@@ -9,9 +9,11 @@ import java.util.Map;
 @Data
 public class Message implements Serializable {
 
+    private static final long serialVersionUID = -8916788519298037863L;
+
     /*
     消息的唯一ID
-     */
+    */
     private String messageId;
 
     /*

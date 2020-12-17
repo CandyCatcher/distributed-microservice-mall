@@ -7,12 +7,19 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="foodie-pojo" />
         <module name="foodie-service" />
+        <module name="rabbit-productor" />
+        <module name="rabbit-consumer" />
         <module name="foodie-common" />
+        <module name="foodie-search" />
+        <module name="foodie-sso" />
         <module name="foodie-mapper" />
         <module name="foodie-api" />
-        <module name="foodie-sso" />
+        <module name="foodie-pojo" />
+        <module name="rabbit-task" />
+        <module name="rabbit-api" />
+        <module name="rabbit-common" />
+        <module name="rabbit-core-producer" />
       </profile>
     </annotationProcessing>
   </component>
@@ -22,8 +29,15 @@
       <module name="foodie-common" options="-parameters" />
       <module name="foodie-mapper" options="-parameters" />
       <module name="foodie-pojo" options="-parameters" />
+      <module name="foodie-search" options="-parameters" />
       <module name="foodie-service" options="-parameters" />
       <module name="foodie-sso" options="-parameters" />
+      <module name="rabbit-api" options="-parameters" />
+      <module name="rabbit-common" options="-parameters" />
+      <module name="rabbit-consumer" options="-parameters" />
+      <module name="rabbit-core-producer" options="-parameters" />
+      <module name="rabbit-productor" options="-parameters" />
+      <module name="rabbit-task" options="-parameters" />
     </option>
   </component>
 </project>

@@ -1,5 +1,7 @@
 package top.candysky.rabbit.api;
 
+import top.candysky.rabbit.api.exception.MessageRunTimeException;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -61,6 +63,10 @@ public class MessageBuilder {
 
         if (messageId == null) {
             messageId = UUID.randomUUID().toString();
+        }
+
+        if (topic == null) {
+            throw new MessageRunTimeException("topic is null");
         }
 
         Message message = new Message(messageId, topic, routingKey, attributes, delayMills, messageType);
