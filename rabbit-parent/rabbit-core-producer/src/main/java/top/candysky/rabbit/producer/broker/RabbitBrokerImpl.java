@@ -7,13 +7,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.candysky.rabbit.api.Message;
 import top.candysky.rabbit.api.MessageType;
+import top.candysky.rabbit.api.exception.MessageException;
 
+/**
+ * 在这里做一个池化的操作
+ * '@Autowired'引入的rabbitTemplate是单例的
+ * 1. 每一个topic对应一个RabbitTemplate，提高发送效率
+ * 2. 根据不同的需求指定化不同的模版
+ * 之后再增加其他的类型，直接在continer中添加就好了
+ *
+ * 每一个topic对应的routingKey都是不一样的
+ * 假设用的是rabbitTemplate，假设routingKey是rabbit.*,
+ * 假设后面改成了spring.*，那么每次都要进行手动重新的设置，很麻烦
+ */
 @Component
 @Slf4j
 public class RabbitBrokerImpl implements RabbitBroker{
 
+    //@Autowired
+    //private RabbitTemplate rabbitTemplate;
+
     @Autowired
-    private RabbitTemplate rabbitTemplate;
+    private RabbitTemplateContainer rabbitTemplateContainer;
 
     @Override
     public void rapidSend(Message message) {
@@ -31,7 +46,14 @@ public class RabbitBrokerImpl implements RabbitBroker{
                     message.getMessageId(), System.currentTimeMillis()));
             String topic = message.getTopic();
             String routingKey = message.getRoutingKey();
-            rabbitTemplate.convertAndSend(topic,routingKey, message, correlationData);
+            RabbitTemplate template = null;
+            try {
+                template = rabbitTemplateContainer.getTemplate(message);
+            } catch (MessageException e) {
+                e.printStackTrace();
+            }
+            assert template != null;
+            template.convertAndSend(topic,routingKey, message, correlationData);
 
             log.info("#RabbitBrokerImpl.sendKernal# send to rabbitmq, messageId:{}", message.getMessageId());
         });
