@@ -41,8 +41,15 @@ public class ProducerClient implements MessageProducer {
 
     }
 
+    /*
+    发送批量消息
+    */
     @Override
     public void send(List<Message> messageList) throws MessageRunTimeException {
-
+        messageList.forEach(message -> {
+            message.setMessageType(MessageType.RAPID);
+            MessageHolder.add(message);
+        });
+        rabbitBroker.sendMessages();
     }
 }

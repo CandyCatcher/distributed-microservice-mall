@@ -7,6 +7,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.candysky.rabbit.producer.entity.BrokerMessage;
 
+/**
+ * 用的mybatis
+ */
 @Mapper
 public interface BrokerMessageMapper {
 	

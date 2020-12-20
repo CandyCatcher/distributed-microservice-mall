@@ -18,6 +18,7 @@ import top.candysky.rabbit.common.convert.RabbitMessageConverter;
 import top.candysky.rabbit.common.serializer.Serializer;
 import top.candysky.rabbit.common.serializer.SerializerFactory;
 import top.candysky.rabbit.common.serializer.impl.JacksonSerializerFactory;
+import top.candysky.rabbit.producer.service.MessageStroreService;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,9 @@ public class RabbitTemplateContainer implements RabbitTemplate.ConfirmCallback {
      */
     @Autowired
     private ConnectionFactory connectionFactory;
+
+    @Autowired
+    private MessageStroreService messageStroreService;
 
     /*
     饥饿模式
@@ -103,10 +107,27 @@ public class RabbitTemplateContainer implements RabbitTemplate.ConfirmCallback {
         List<String> splitToList = splitter.splitToList(correlationData.getId());
         String messageId = splitToList.get(0);
         Long sendTime = Long.valueOf(splitToList.get(1));
+        String status = splitToList.get(2);
         if (ack) {
 
+            /*
+            如果Broker返回ACK成功，更新一下日志表中对应的消息发送状态为SEND_OK
+            实际上只有reliant发送的时候才会去更新
+             */
+            // MessageType.RELIANT.endWith(status)
+            if (status.equals(MessageType.RELIANT)) {
+                messageStroreService.success(messageId);
+            }
+            /*
+            当Broker返回ACK成功时，就是更新一下日志表里面对应的消息发送状态为1
+             */
+            messageStroreService.success(messageId);
             log.info("send message is OK. confirm messageId: {}, sendTime: {}", messageId, sendTime);
         } else {
+            /*
+            这里就要用到定时任务了
+             */
+            messageStroreService.failure(messageId);
             log.info("send message is FAIL. confirm messageId: {}, sendTime: {}", messageId, sendTime);
         }
 

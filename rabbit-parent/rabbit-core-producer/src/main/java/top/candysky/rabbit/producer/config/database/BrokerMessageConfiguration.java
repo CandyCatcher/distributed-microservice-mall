@@ -26,12 +26,16 @@ public class BrokerMessageConfiguration {
     
     @Value("classpath:rabbit-producer-message-schema.sql")
     private Resource schemaScript;
-    
+
+    /*
+    数据源连上了，才说明操作数据库
+     */
     @Bean
     public DataSourceInitializer initDataSourceInitializer() {
     	System.err.println("--------------rabbitProducerDataSource-----------:" + rabbitProducerDataSource);
         final DataSourceInitializer initializer = new DataSourceInitializer();
         initializer.setDataSource(rabbitProducerDataSource);
+        // 这里执行建表脚本
         initializer.setDatabasePopulator(databasePopulator());
         return initializer;
     }

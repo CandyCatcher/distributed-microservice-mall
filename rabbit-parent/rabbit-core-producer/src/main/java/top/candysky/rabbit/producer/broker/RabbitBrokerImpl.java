@@ -1,6 +1,8 @@
 package top.candysky.rabbit.producer.broker;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,13 @@ import org.springframework.stereotype.Component;
 import top.candysky.rabbit.api.Message;
 import top.candysky.rabbit.api.MessageType;
 import top.candysky.rabbit.api.exception.MessageException;
+import top.candysky.rabbit.producer.constant.BrokerMessageConst;
+import top.candysky.rabbit.producer.constant.BrokerMessageStatus;
+import top.candysky.rabbit.producer.entity.BrokerMessage;
+import top.candysky.rabbit.producer.service.MessageStroreService;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 在这里做一个池化的操作
@@ -30,6 +39,9 @@ public class RabbitBrokerImpl implements RabbitBroker{
     @Autowired
     private RabbitTemplateContainer rabbitTemplateContainer;
 
+    @Autowired
+    private MessageStroreService messageStroreService;
+
     @Override
     public void rapidSend(Message message) {
         message.setMessageType(MessageType.RAPID);
@@ -42,8 +54,9 @@ public class RabbitBrokerImpl implements RabbitBroker{
     private void sendKernal(Message message) {
 
         AsyncBaseQueue.submit((Runnable) () -> {
-            CorrelationData correlationData = new CorrelationData(String.format("%s#%s",
-                    message.getMessageId(), System.currentTimeMillis()));
+            // 每一个消息都有一个correlationData = 唯一ID + 当前时间戳
+            CorrelationData correlationData = new CorrelationData(String.format("%s#%s#%s",
+                    message.getMessageId(), System.currentTimeMillis(), message.getMessageType()));
             String topic = message.getTopic();
             String routingKey = message.getRoutingKey();
             RabbitTemplate template = null;
@@ -105,10 +118,48 @@ public class RabbitBrokerImpl implements RabbitBroker{
     @Override
     public void reliantSend(Message message) {
 
+        String messageId = message.getMessageId();
+        BrokerMessage bm = messageStroreService.query(messageId);
+        if (bm == null) {
+             /*
+              1. 把消息发送日志保存到数据库中
+             */
+            Date now = new Date();
+            BrokerMessage brokerMessage = new BrokerMessage();
+            brokerMessage.setMessage(message);
+            brokerMessage.setMessageId(messageId);
+            brokerMessage.setStatus(BrokerMessageStatus.SENDING.code);
+            brokerMessage.setNextRetry(DateUtils.setMinutes(now, BrokerMessageConst.TIME));
+            brokerMessage.setCreateTime(now);
+            brokerMessage.setUpdateTime(now);
+        }
+         /*
+          2. 执行真正的发送消息逻辑
+         */
+        sendKernal(message);
     }
 
     @Override
     public void sendMessages() {
-
+        List<Message> messages = MessageHolder.clear();
+        messages.forEach(message -> {
+            MessageHolderAyncQueue.submit((Runnable) () -> {
+                CorrelationData correlationData =
+                        new CorrelationData(String.format("%s#%s#%s",
+                                message.getMessageId(),
+                                System.currentTimeMillis(),
+                                message.getMessageType()));
+                String topic = message.getTopic();
+                String routingKey = message.getRoutingKey();
+                RabbitTemplate rabbitTemplate = null;
+                try {
+                    rabbitTemplate = rabbitTemplateContainer.getTemplate(message);
+                } catch (MessageException e) {
+                    e.printStackTrace();
+                }
+                rabbitTemplate.convertAndSend(topic, routingKey, message, correlationData);
+                log.info("#RabbitBrokerImpl.sendMessages# send to rabbitmq, messageId: {}", message.getMessageId());
+            });
+        });
     }
 }

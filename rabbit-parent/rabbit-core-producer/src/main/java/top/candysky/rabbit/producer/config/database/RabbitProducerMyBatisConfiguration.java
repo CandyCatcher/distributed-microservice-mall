@@ -15,6 +15,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 
 
 @Configuration
+// 说明要执行完RabbitProducerDataSourceConfiguration这个类才执行下一步
 @AutoConfigureAfter(value = {RabbitProducerDataSourceConfiguration.class})
 public class RabbitProducerMyBatisConfiguration {
 
@@ -28,7 +29,7 @@ public class RabbitProducerMyBatisConfiguration {
 		bean.setDataSource(rabbitProducerDataSource);
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 		try {
-			bean.setMapperLocations(resolver.getResources("classpath:com/bfxy/rabbit/producer/mapping/*.xml"));
+			bean.setMapperLocations(resolver.getResources("classpath:top/candysky/rabbit/producer/mapping/*.xml"));
 			SqlSessionFactory sqlSessionFactory = bean.getObject();
 			sqlSessionFactory.getConfiguration().setCacheEnabled(Boolean.TRUE);
 			return sqlSessionFactory;
@@ -36,7 +37,10 @@ public class RabbitProducerMyBatisConfiguration {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
+	/*
+	这里可以加事务
+	 */
 	@Bean(name="rabbitProducerSqlSessionTemplate")
 	public SqlSessionTemplate rabbitProducerSqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
 		return new SqlSessionTemplate(sqlSessionFactory);
