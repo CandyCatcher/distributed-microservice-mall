@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-#  这样就能帮我们自动装配下面这个类了
-top.candysky.rabbit.producer.autoconfig.RabbitProducerAutoConfiguration
