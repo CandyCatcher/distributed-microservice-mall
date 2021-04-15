@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import springfox.documentation.annotations.ApiIgnore;
 import top.candyboy.user.pojo.Users;
 import top.candyboy.user.pojo.vo.UsersVO;
-import top.candyboy.user.service.UserService;
 import top.candyboy.utils.IMOOCJSONResult;
 import top.candyboy.utils.JsonUtils;
 import top.candyboy.utils.MD5Utils;

@@ -12,7 +12,6 @@ import org.springframework.web.client.RestTemplate;
 import top.candyboy.controller.BaseController;
 import top.candyboy.enums.OrderStatusEnum;
 import top.candyboy.enums.PayMethod;
-import top.candyboy.item.service.ItemService;
 import top.candyboy.order.pojo.bo.ShopCartBO;
 import top.candyboy.order.pojo.bo.SubmitOrderBO;
 import top.candyboy.order.pojo.vo.MerchantOrdersVO;

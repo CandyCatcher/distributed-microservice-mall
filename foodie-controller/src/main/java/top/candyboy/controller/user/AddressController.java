@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.candyboy.user.pojo.UserAddress;
 import top.candyboy.user.pojo.bo.UserAddressBO;
-import top.candyboy.user.service.AddressService;
 import top.candyboy.utils.IMOOCJSONResult;
 import top.candyboy.utils.MobileEmailUtils;
 

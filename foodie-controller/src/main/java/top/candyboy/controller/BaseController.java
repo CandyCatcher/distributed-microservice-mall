@@ -3,7 +3,7 @@ package top.candyboy.controller;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
-import top.candyboy.center.service.MyOrdersService;
+import top.candyboy.center.MyOrdersService;
 import top.candyboy.order.pojo.Orders;
 import top.candyboy.user.pojo.Users;
 import top.candyboy.user.pojo.vo.UsersVO;

@@ -9,15 +9,10 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>foodie-common</module>
-        <module>foodie-sso</module>
-        <module>foodie-item-api</module>
-        <module>foodie-item-service</module>
-        <module>foodie-user-api</module>
-        <module>foodie-user-service</module>
-        <module>foodie-order-api</module>
-        <module>foodie-order-service</module>
-        <module>foodie-center-api</module>
-        <module>foodie-center-service</module>
+        <module>foodie-item</module>
+        <module>foodie-user</module>
+        <module>foodie-order</module>
+        <module>foodie-center</module>
         <module>foodie-controller</module>
     </modules>
 

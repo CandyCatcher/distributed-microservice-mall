@@ -12,7 +12,6 @@ import top.candyboy.order.pojo.bo.ShopCartBO;
 import top.candyboy.user.pojo.Users;
 import top.candyboy.user.pojo.bo.UserBO;
 import top.candyboy.user.pojo.vo.UsersVO;
-import top.candyboy.user.service.UserService;
 import top.candyboy.utils.*;
 
 import javax.servlet.http.HttpServletRequest;

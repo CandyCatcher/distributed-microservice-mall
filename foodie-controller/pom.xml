@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>top.candyboy</groupId>
-            <artifactId>foodie-center-api</artifactId>
+            <artifactId>foodie-center</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
@@ -25,13 +25,13 @@
         </dependency>
         <dependency>
             <groupId>top.candyboy</groupId>
-            <artifactId>foodie-user-api</artifactId>
+            <artifactId>foodie-user</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>top.candyboy</groupId>
-            <artifactId>foodie-item-api</artifactId>
+            <artifactId>foodie-item</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

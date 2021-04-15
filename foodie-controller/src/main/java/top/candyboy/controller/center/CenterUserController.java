@@ -1,7 +1,7 @@
 package top.candyboy.controller.center;
 
-import top.candyboy.center.pojo.bo.CenterUserBO;
-import top.candyboy.center.service.CenterUserService;
+import top.candyboy.facade.center.pojo.bo.CenterUserBO;
+import top.candyboy.center.CenterUserService;
 import top.candyboy.controller.BaseController;
 import top.candyboy.resource.FileUpload;
 import top.candyboy.user.pojo.Users;
