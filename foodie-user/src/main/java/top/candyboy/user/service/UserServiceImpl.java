@@ -1,8 +1,8 @@
 package top.candyboy.user.service;
 
+import org.apache.dubbo.config.annotation.DubboService;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
@@ -16,8 +16,7 @@ import top.candyboy.utils.MD5Utils;
 
 import java.util.Date;
 
-
-@Service
+@DubboService(interfaceClass = UserService.class)
 public class UserServiceImpl implements UserService {
 
     @Autowired

@@ -1,10 +1,10 @@
 package top.candyboy.pojo.item.vo;
 
 import lombok.Data;
-import top.candyboy.facade.item.pojo.Items;
-import top.candyboy.facade.item.pojo.ItemsImg;
-import top.candyboy.facade.item.pojo.ItemsParam;
-import top.candyboy.facade.item.pojo.ItemsSpec;
+import top.candyboy.pojo.item.Items;
+import top.candyboy.pojo.item.ItemsImg;
+import top.candyboy.pojo.item.ItemsParam;
+import top.candyboy.pojo.item.ItemsSpec;
 
 import java.util.List;
 

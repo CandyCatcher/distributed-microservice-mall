@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import top.candyboy.user.pojo.UserAddress;
-import top.candyboy.user.pojo.bo.UserAddressBO;
+import top.candyboy.facade.user.AddressService;
+import top.candyboy.pojo.user.UserAddress;
+import top.candyboy.pojo.user.bo.UserAddressBO;
+
 import top.candyboy.utils.IMOOCJSONResult;
 import top.candyboy.utils.MobileEmailUtils;
 

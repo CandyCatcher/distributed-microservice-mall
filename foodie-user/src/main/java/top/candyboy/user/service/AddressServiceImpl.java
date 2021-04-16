@@ -1,10 +1,10 @@
 package top.candyboy.user.service;
 
 
+import org.apache.dubbo.config.annotation.DubboService;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import top.candyboy.enums.YesOrNo;
@@ -16,7 +16,7 @@ import top.candyboy.user.mapper.UserAddressMapper;
 import java.util.Date;
 import java.util.List;
 
-@Service
+@DubboService(interfaceClass = AddressService.class)
 public class AddressServiceImpl implements AddressService {
 
     @Autowired

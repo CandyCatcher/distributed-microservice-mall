@@ -4,17 +4,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import top.candyboy.constant.Constant;
 import top.candyboy.utils.IMOOCJSONResult;
 import top.candyboy.utils.JsonUtils;
-import top.candyboy.utils.RedisOperator;
+import top.candyboy.redis.RedisOperator;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-
-import static top.candyboy.controller.BaseController.REDIS_USER_TOKEN;
 
 public class UserTokenInterceptor implements HandlerInterceptor {
 
@@ -31,7 +30,7 @@ public class UserTokenInterceptor implements HandlerInterceptor {
         String headerUserToken = request.getHeader("headerUserToken");
 
         if (StringUtils.isNoneBlank(userId) && StringUtils.isNoneBlank(headerUserToken)) {
-            String redisUserToken = redisOperator.get(REDIS_USER_TOKEN + ":" + userId);
+            String redisUserToken = redisOperator.get(Constant.REDIS_USER_TOKEN + ":" + userId);
             if (StringUtils.isBlank(redisUserToken)) {
                 //System.out.println("请登录");
                 returnErrorResponse(response, IMOOCJSONResult.errorMsg("请登录"));

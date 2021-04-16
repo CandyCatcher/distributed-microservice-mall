@@ -15,7 +15,7 @@ import top.candyboy.user.pojo.vo.UsersVO;
 import top.candyboy.utils.IMOOCJSONResult;
 import top.candyboy.utils.JsonUtils;
 import top.candyboy.utils.MD5Utils;
-import top.candyboy.utils.RedisOperator;
+import top.candyboy.redis.RedisOperator;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;

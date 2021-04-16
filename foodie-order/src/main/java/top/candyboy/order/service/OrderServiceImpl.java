@@ -1,8 +1,8 @@
 package top.candyboy.order.service;
 
+import org.apache.dubbo.config.annotation.DubboService;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import top.candyboy.enums.OrderStatusEnum;
 import top.candyboy.enums.YesOrNo;
 import top.candyboy.item.ItemService;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Service
+@DubboService(interfaceClass = OrderService.class)
 public class OrderServiceImpl implements OrderService {
 
     @Autowired

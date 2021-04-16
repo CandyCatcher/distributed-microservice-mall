@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="top.candyboy.item.mapper.ItemsMapperCustomer" >
-  <select id="getItemsMapper" parameterType="Map" resultType="top.candyboy.facade.item.pojo.vo.ItemCommentVO">
+  <select id="getItemsMapper" parameterType="Map" resultType="top.candyboy.pojo.item.vo.ItemCommentVO">
     SELECT
         ic.comment_level AS commentLevel,
         ic.content AS content,
@@ -23,7 +23,7 @@
     </if>
   </select>
 
-  <select id="searchItems" parameterType="Map" resultType="top.candyboy.pojo.vo.SearchItemsVO">
+  <select id="searchItems" parameterType="Map" resultType="top.candyboy.pojo.item.vo.SearchItemsVO">
     SELECT
         i.id AS itemId,
         i.item_name AS itemName,
@@ -60,7 +60,7 @@
    </choose>
   </select>
 
-  <select id="searchItemsByThirdCat" parameterType="Map" resultType="top.candyboy.pojo.vo.SearchItemsVO">
+  <select id="searchItemsByThirdCat" parameterType="Map" resultType="top.candyboy.pojo.item.vo.SearchItemsVO">
     SELECT
         i.id AS itemId,
         i.item_name AS itemName,
@@ -95,7 +95,7 @@
      </choose>
     </select>
 
-    <select id="queryItemBySpecId" parameterType="List" resultType="top.candyboy.pojo.vo.ShopCartVO">
+    <select id="queryItemBySpecId" parameterType="List" resultType="top.candyboy.pojo.item.vo.ShopCartVO">
         SELECT
             i.id AS itemId,
             i.item_name AS itemName,

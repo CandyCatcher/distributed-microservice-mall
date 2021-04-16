@@ -2,8 +2,8 @@ package top.candyboy.item.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
@@ -22,7 +22,7 @@ import top.candyboy.utils.PagedGridResult;
 
 import java.util.*;
 
-@Service
+@DubboService(interfaceClass = ItemService.class)
 public class ItemServiceImpl implements ItemService {
 
     @Autowired

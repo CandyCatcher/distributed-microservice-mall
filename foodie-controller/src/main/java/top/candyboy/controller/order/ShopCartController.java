@@ -8,11 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
-import top.candyboy.controller.BaseController;
-import top.candyboy.order.pojo.bo.ShopCartBO;
+import top.candyboy.constant.Constant;
+import top.candyboy.pojo.order.bo.ShopCartBO;
 import top.candyboy.utils.IMOOCJSONResult;
 import top.candyboy.utils.JsonUtils;
-import top.candyboy.utils.RedisOperator;
+import top.candyboy.redis.RedisOperator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,7 +53,7 @@ public class ShopCartController {
          */
         // 加冒号是为了在rdm中好看
         // 需要加上userId进行判断是谁的购物车呀
-        String shopCartStr = redisOperator.get(BaseController.FOODIE_SHOPCART + ":" + userId);
+        String shopCartStr = redisOperator.get(Constant.FOODIE_SHOPCART + ":" + userId);
         List<ShopCartBO> shopCartBOList = null;
         if (StringUtils.isBlank(shopCartStr)) {
             // redis中没有购物车，直接添加到购物车中
@@ -80,7 +80,7 @@ public class ShopCartController {
             }
         }
         // 前面的操作没有涉及到缓存，这里覆盖redis中的缓存
-        redisOperator.set(BaseController.FOODIE_SHOPCART + ":" + userId, JsonUtils.objectToJson(shopCartBOList));
+        redisOperator.set(Constant.FOODIE_SHOPCART + ":" + userId, JsonUtils.objectToJson(shopCartBOList));
         return IMOOCJSONResult.ok();
     }
 
@@ -95,7 +95,7 @@ public class ShopCartController {
         }
 
         // 前端用户在登录的情况下，删除购物车里的商品，会同时在后端redis缓存中同步删除购物车
-        String shopCartStr = redisOperator.get(BaseController.FOODIE_SHOPCART + ":" + userId);
+        String shopCartStr = redisOperator.get(Constant.FOODIE_SHOPCART + ":" + userId);
         List<ShopCartBO> shopCartBOList = null;
         if (StringUtils.isBlank(shopCartStr)) {
             // redis缓存中已经有购物车了
@@ -112,7 +112,7 @@ public class ShopCartController {
             }
         }
         // 前面的操作没有涉及到缓存，这里覆盖redis中的缓存
-        redisOperator.set(BaseController.FOODIE_SHOPCART + ":" + userId, JsonUtils.objectToJson(shopCartBOList));
+        redisOperator.set(Constant.FOODIE_SHOPCART + ":" + userId, JsonUtils.objectToJson(shopCartBOList));
         return IMOOCJSONResult.ok();
     }
 

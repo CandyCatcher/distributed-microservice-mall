@@ -1,7 +1,7 @@
 package top.candyboy.item.service;
 
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
@@ -16,7 +16,7 @@ import top.candyboy.pojo.item.vo.NewItemsVO;
 import java.util.HashMap;
 import java.util.List;
 
-@Service
+@DubboService(interfaceClass = CategoryService.class)
 public class CategoryServiceImpl implements CategoryService {
 
     @Autowired

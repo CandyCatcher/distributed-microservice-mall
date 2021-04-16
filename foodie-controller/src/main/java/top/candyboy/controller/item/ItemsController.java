@@ -8,14 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import top.candyboy.controller.BaseController;
-import top.candyboy.facade.item.pojo.Items;
-import top.candyboy.facade.item.pojo.ItemsImg;
-import top.candyboy.facade.item.pojo.ItemsParam;
-import top.candyboy.facade.item.pojo.ItemsSpec;
-import top.candyboy.facade.item.pojo.vo.CommentLevelCountsVO;
-import top.candyboy.facade.item.pojo.vo.ItemInfoVO;
-import top.candyboy.facade.item.pojo.vo.ShopCartVO;
+import top.candyboy.constant.Constant;
+import top.candyboy.item.ItemService;
+import top.candyboy.pojo.item.Items;
+import top.candyboy.pojo.item.ItemsImg;
+import top.candyboy.pojo.item.ItemsParam;
+import top.candyboy.pojo.item.ItemsSpec;
+import top.candyboy.pojo.item.vo.CommentLevelCountsVO;
+import top.candyboy.pojo.item.vo.ItemInfoVO;
+import top.candyboy.pojo.item.vo.ShopCartVO;
 import top.candyboy.utils.IMOOCJSONResult;
 import top.candyboy.utils.PagedGridResult;
 
@@ -92,7 +93,7 @@ public class ItemsController {
         }
 
         if (pageSize == null) {
-            pageSize = BaseController.COMMON_PAGE_SIZE;
+            pageSize = Constant.COMMON_PAGE_SIZE;
         }
 
         PagedGridResult grid = itemsService.queryCommentsByPage(itemId, level, page, pageSize);
@@ -120,7 +121,7 @@ public class ItemsController {
         }
 
         if (pageSize == null) {
-            pageSize = BaseController.PAGE_SIZE;
+            pageSize = Constant.PAGE_SIZE;
         }
 
         PagedGridResult grid = itemsService.searchItemsBykeywords(keywords, sort, page, pageSize);
@@ -148,7 +149,7 @@ public class ItemsController {
         }
 
         if (pageSize == null) {
-            pageSize = BaseController.PAGE_SIZE;
+            pageSize = Constant.PAGE_SIZE;
         }
 
         PagedGridResult grid = itemsService.searchItemsByThirdCat(catId, sort, page, pageSize);

@@ -9,18 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import top.candyboy.controller.BaseController;
+import top.candyboy.constant.Constant;
 import top.candyboy.enums.OrderStatusEnum;
 import top.candyboy.enums.PayMethod;
-import top.candyboy.order.pojo.bo.ShopCartBO;
-import top.candyboy.order.pojo.bo.SubmitOrderBO;
-import top.candyboy.order.pojo.vo.MerchantOrdersVO;
-import top.candyboy.order.pojo.vo.OrderVO;
-import top.candyboy.order.service.OrderService;
+import top.candyboy.facade.order.OrderService;
+import top.candyboy.item.ItemService;
+import top.candyboy.pojo.order.bo.ShopCartBO;
+import top.candyboy.pojo.order.bo.SubmitOrderBO;
+import top.candyboy.pojo.order.vo.MerchantOrdersVO;
+import top.candyboy.pojo.order.vo.OrderVO;
 import top.candyboy.utils.CookieUtils;
 import top.candyboy.utils.IMOOCJSONResult;
 import top.candyboy.utils.JsonUtils;
-import top.candyboy.utils.RedisOperator;
+import top.candyboy.redis.RedisOperator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,7 +58,7 @@ public class OrdersController {
         }
 
         // 在创建订单之前，需要看redis中有没有相应的购物车，
-        String shopCartStr = redisOperator.get(BaseController.FOODIE_SHOPCART + ":" + submitOrderBO.getUserId());
+        String shopCartStr = redisOperator.get(Constant.FOODIE_SHOPCART + ":" + submitOrderBO.getUserId());
         if (StringUtils.isBlank(shopCartStr)) {
             // 因为后面要使用到购物车，所以这里购物车不能为空
             return IMOOCJSONResult.errorMsg("购物车数据错误");
@@ -79,14 +80,14 @@ public class OrdersController {
          覆盖现有的redis汇总的购物数据
          */
         shopCartList.removeAll(orderVO.getToBeRemovedShopcartList());
-        redisOperator.set(BaseController.FOODIE_SHOPCART + ":" + submitOrderBO.getUserId(), JsonUtils.objectToJson(shopCartList));
-        CookieUtils.setCookie(request, response, BaseController.FOODIE_SHOPCART, "");
+        redisOperator.set(Constant.FOODIE_SHOPCART + ":" + submitOrderBO.getUserId(), JsonUtils.objectToJson(shopCartList));
+        CookieUtils.setCookie(request, response, Constant.FOODIE_SHOPCART, "");
 
         // 将商户订单的信息发送给支付中心，用于保存支付中心的订单数据
         // 那怎么在我们的系统中去调用另一个系统的功能呢？
         // 可以用http，也可以用spring的rest
         MerchantOrdersVO merchantOrdersVO = orderVO.getMerchantOrdersVO();
-        merchantOrdersVO.setReturnUrl(BaseController.PAYRETURNURL);
+        merchantOrdersVO.setReturnUrl(Constant.PAYRETURNURL);
 
         merchantOrdersVO.setAmount(1);
 
@@ -99,7 +100,7 @@ public class OrdersController {
         HttpEntity<MerchantOrdersVO> entity = new HttpEntity<>(merchantOrdersVO, headers);
 
         // 返回的类型IMOOCJSONResult.class
-        ResponseEntity<IMOOCJSONResult> responseEntity = restTemplate.postForEntity(BaseController.PAYMENTURL, entity, IMOOCJSONResult.class);
+        ResponseEntity<IMOOCJSONResult> responseEntity = restTemplate.postForEntity(Constant.PAYMENTURL, entity, IMOOCJSONResult.class);
 
         IMOOCJSONResult payResult = responseEntity.getBody();
 

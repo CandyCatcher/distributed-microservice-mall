@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import top.candyboy.center.CenterUserService;
+import top.candyboy.facade.center.CenterUserService;
 import top.candyboy.user.pojo.Users;
 import top.candyboy.utils.IMOOCJSONResult;
 

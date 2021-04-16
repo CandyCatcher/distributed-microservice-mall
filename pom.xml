@@ -61,11 +61,22 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-aop</artifactId>
     </dependency>
+    <!--zookeeper引入-->
     <!-- https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper -->
     <dependency>
         <groupId>org.apache.zookeeper</groupId>
         <artifactId>zookeeper</artifactId>
         <version>3.7.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-framework</artifactId>
+        <version>5.1.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-recipes</artifactId>
+        <version>5.1.0</version>
     </dependency>
     <!--服务接口Jar-->
     <!--<dependency>-->
@@ -84,6 +95,7 @@
     <!--    <artifactId>spring-boot-starter-dubbo</artifactId>-->
     <!--</dependency>-->
 
+    <!--dubbo引入-->
     <!-- https://mvnrepository.com/artifact/org.apache.dubbo/dubbo -->
     <dependency>
         <groupId>org.apache.dubbo</groupId>
@@ -192,10 +204,10 @@
     </dependency>
 
     <!-- 引入redis依赖-->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-redis</artifactId>
-    </dependency>
+    <!--<dependency>-->
+    <!--    <groupId>org.springframework.boot</groupId>-->
+    <!--    <artifactId>spring-boot-starter-data-redis</artifactId>-->
+    <!--</dependency>-->
 
     </dependencies>
 

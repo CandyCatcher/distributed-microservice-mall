@@ -7,11 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import top.candyboy.constant.Constant;
 import top.candyboy.controller.BaseController;
-import top.candyboy.order.pojo.bo.ShopCartBO;
-import top.candyboy.user.pojo.Users;
-import top.candyboy.user.pojo.bo.UserBO;
-import top.candyboy.user.pojo.vo.UsersVO;
+import top.candyboy.facade.user.UserService;
+import top.candyboy.pojo.order.bo.ShopCartBO;
+import top.candyboy.pojo.user.Users;
+import top.candyboy.pojo.user.bo.UserBO;
+import top.candyboy.pojo.user.vo.UsersVO;
+import top.candyboy.redis.RedisOperator;
 import top.candyboy.utils.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -144,9 +147,9 @@ public class PassPortController extends BaseController {
         /*
         用户退出登录, 前端的cookie需要清掉，redis中的一些信息也需要清理
          */
-        redisOperator.del(BaseController.REDIS_USER_TOKEN + ":" + userId);
+        redisOperator.del(Constant.REDIS_USER_TOKEN + ":" + userId);
         // 分布式会话需要清除用户数据
-        CookieUtils.deleteCookie(request, response, BaseController.FOODIE_SHOPCART);
+        CookieUtils.deleteCookie(request, response, Constant.FOODIE_SHOPCART);
 
         return IMOOCJSONResult.ok();
     }
@@ -164,18 +167,18 @@ public class PassPortController extends BaseController {
         3.同步到redis中之后，覆盖本地cookie购物车的数据，保证本地购物车的数据是同步到最新的
          */
         // 从redis中获取购物车
-        String shopCartJsonRedis = redisOperator.get(BaseController.FOODIE_SHOPCART + ":" + userId);
+        String shopCartJsonRedis = redisOperator.get(Constant.FOODIE_SHOPCART + ":" + userId);
 
         // 从cookie中获取购物车
-        String shopCartJsonCookie = CookieUtils.getCookieValue(request, response, BaseController.FOODIE_SHOPCART);
+        String shopCartJsonCookie = CookieUtils.getCookieValue(request, response, Constant.FOODIE_SHOPCART);
 
         if (StringUtils.isBlank(shopCartJsonRedis)) {
             if (StringUtils.isNotBlank(shopCartJsonCookie)) {
-                redisOperator.set(BaseController.FOODIE_SHOPCART + ":" + userId, shopCartJsonCookie);
+                redisOperator.set(Constant.FOODIE_SHOPCART + ":" + userId, shopCartJsonCookie);
             }
         } else {
             if (StringUtils.isBlank(shopCartJsonCookie)) {
-                CookieUtils.setCookie(request, response, BaseController.FOODIE_SHOPCART, shopCartJsonRedis, true);
+                CookieUtils.setCookie(request, response, Constant.FOODIE_SHOPCART, shopCartJsonRedis, true);
             } else {
                 /*
                  1. 已经存在的，把cookie中对应的数量，覆盖redis（参考京东）
@@ -211,8 +214,8 @@ public class PassPortController extends BaseController {
                 // TODO 这样就合并了？
                 shopCartBOListRedis.addAll(shopCartBOListCookie);
                 // 更新到redis和cookie
-                CookieUtils.setCookie(request, response, BaseController.FOODIE_SHOPCART, JsonUtils.objectToJson(shopCartBOListRedis), true);
-                redisOperator.set(BaseController.FOODIE_SHOPCART + ":" + userId, JsonUtils.objectToJson(shopCartBOListRedis));
+                CookieUtils.setCookie(request, response, Constant.FOODIE_SHOPCART, JsonUtils.objectToJson(shopCartBOListRedis), true);
+                redisOperator.set(Constant.FOODIE_SHOPCART + ":" + userId, JsonUtils.objectToJson(shopCartBOListRedis));
             }
         }
     }

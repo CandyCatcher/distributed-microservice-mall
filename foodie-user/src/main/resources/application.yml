@@ -16,8 +16,10 @@ server:
 #
 ############################################################
 spring:
-  profiles:
-    active: dev
+#  profiles:
+#    active: dev
+  application:
+    name: foodie-user
   datasource:                                         # 数据源的相关配置
     type: com.zaxxer.hikari.HikariDataSource          # 数据源类型：HikariCP
     driver-class-name: com.mysql.cj.jdbc.Driver          # mysql驱动
@@ -95,7 +97,7 @@ pagehelper:
 ############################################################
 dubbo:
   application:
-    name: dubbo-foodie-center
+    name: ${spring.application.name}
   registry:
     address: zookeeper://1.116.87.203:2181
   protocol:
