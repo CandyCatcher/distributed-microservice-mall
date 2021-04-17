@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import top.candyboy.facade.center.MyCommentsService;
 import top.candyboy.enums.YesOrNo;
-import top.candyboy.item.mapper.ItemsCommentsMapperCustom;
+import top.candyboy.facade.item.mapper.ItemsCommentsMapperCustom;
 import top.candyboy.order.mapper.OrderItemsMapper;
 import top.candyboy.order.mapper.OrderStatusMapper;
 import top.candyboy.order.mapper.OrdersMapper;

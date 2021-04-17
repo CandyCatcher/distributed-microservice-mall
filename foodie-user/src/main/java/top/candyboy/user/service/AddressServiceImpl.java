@@ -25,6 +25,10 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     Sid sid;
 
+    public void setSid(Sid sid) {
+        this.sid = sid;
+    }
+
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public List<UserAddress> queryAll(String userId) {

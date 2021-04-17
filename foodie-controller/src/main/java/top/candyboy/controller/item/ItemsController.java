@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.candyboy.constant.Constant;
-import top.candyboy.item.ItemService;
+import top.candyboy.facade.item.ItemService;
 import top.candyboy.pojo.item.Items;
 import top.candyboy.pojo.item.ItemsImg;
 import top.candyboy.pojo.item.ItemsParam;

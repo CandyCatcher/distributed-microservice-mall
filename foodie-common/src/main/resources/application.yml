@@ -40,8 +40,8 @@ spring:
       max-file-size: 512000     # 文件上传大小限制为500kb
       max-request-size: 512000  # 请求大小限制为500kb
 
-  session:
-    store-type: redis
+#  session:
+#    store-type: redis
 ############################################################
 #
 # mybatis 配置
@@ -78,6 +78,7 @@ dubbo:
     name: ${spring.application.name}
   registry:
     address: zookeeper://1.116.87.203:2181
+    timeout: 150000
   protocol:
     name: dubbo
     port: 20880

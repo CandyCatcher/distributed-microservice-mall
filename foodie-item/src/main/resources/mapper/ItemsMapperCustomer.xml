@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="top.candyboy.item.mapper.ItemsMapperCustomer" >
+<mapper namespace="top.candyboy.facade.item.mapper.ItemsMapperCustomer" >
   <select id="getItemsMapper" parameterType="Map" resultType="top.candyboy.pojo.item.vo.ItemCommentVO">
     SELECT
         ic.comment_level AS commentLevel,

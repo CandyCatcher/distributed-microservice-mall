@@ -1,11 +1,12 @@
 package top.candyboy.order.service;
 
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.candyboy.enums.OrderStatusEnum;
 import top.candyboy.enums.YesOrNo;
-import top.candyboy.item.ItemService;
+import top.candyboy.facade.item.ItemService;
 import top.candyboy.facade.order.OrderService;
 import top.candyboy.facade.user.AddressService;
 import top.candyboy.order.mapper.OrderItemsMapper;
@@ -32,10 +33,12 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     Sid sid;
 
-    @Autowired
+    //@Autowired
+    @DubboReference
     AddressService addressService;
 
-    @Autowired
+    //@Autowired
+    @DubboReference
     ItemService itemService;
 
     /*

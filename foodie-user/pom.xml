@@ -9,7 +9,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>top.candyboy</groupId>
     <artifactId>foodie-user</artifactId>
     <dependencies>
         <dependency>
